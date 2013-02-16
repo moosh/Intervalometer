@@ -1,3 +1,4 @@
 .DS_Store
 Intervalometer.xcodeproj/xcuserdata/*
 Intervalometer.xcodeproj/project.xcworkspace/xcuserdata/*
+Intervalometer/Builds/*
