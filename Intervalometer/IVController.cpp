@@ -89,7 +89,7 @@ void IVController::Timeslice(void)
 	if (digitalRead(kUpButton)) 	mView->OnUpButton();
 	if (digitalRead(kDownButton)) 	mView->OnDownButton();
 	if (digitalRead(kEnterButton)) 	mView->OnEnterButton();
-	delay(220);
+	delay(180);
 
 	mView->Refresh();
 }
