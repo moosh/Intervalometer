@@ -9,6 +9,7 @@
 
 #include "Prefix.h"
 #include "IVView.h"
+#include "SpriteSheets.h"
 
 const int kRS = 0;
 const int kRW = 1;
@@ -32,6 +33,7 @@ IVView::IVView(void)
 	mState = kStateSplashPanel;
 	mSplashPanelSelection = 2;
 	mSettingsPanelSelection = 0;
+	mFrameDelaySelection = kFrameDelaySelectionS2;
 }
 
 /******************************************************************************
@@ -44,6 +46,7 @@ IVView::~IVView(void)
 	mState = kStateSplashPanel;
 	mSplashPanelSelection = 2;
 	mSettingsPanelSelection = 0;
+	mFrameDelaySelection = kFrameDelaySelectionS2;
 }
 
 /******************************************************************************
@@ -295,6 +298,12 @@ void IVView::OnLeftButton(void)
 			break;
 			
 		case kStateFrameDelayPanel:
+		{
+			mFrameDelaySelection--;
+			if (mFrameDelaySelection < kFrameDelaySelectionH1) mFrameDelaySelection = kFrameDelaySelectionS2;
+			break;
+		}
+		
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
@@ -344,6 +353,12 @@ void IVView::OnRightButton(void)
 		}
 			
 		case kStateFrameDelayPanel:
+		{
+			mFrameDelaySelection++;
+			if (mFrameDelaySelection > kFrameDelaySelectionS2) mFrameDelaySelection = kFrameDelaySelectionH1;
+			break;
+		}
+		
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
@@ -380,6 +395,84 @@ void IVView::OnUpButton(void)
 			break;
 			
 		case kStateFrameDelayPanel:
+		{
+			switch (mFrameDelaySelection)
+			{
+				case kFrameDelaySelectionH1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+
+					// add ten hours
+					valTens++;
+					if (valTens > 9) valTens = 0;
+					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionH2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+
+					// add 1 hour
+					valOnes++;
+					if (valOnes > 9) valOnes = 0;
+					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionM1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+
+					// add ten minutes
+					valTens++;
+					if (valTens > 5) valTens = 0;
+					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionM2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+
+					// add 1 minute
+					valOnes++;
+					if (valOnes > 9) valOnes = 0;
+					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionS1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+
+					// add ten seconds
+					valTens++;
+					if (valTens > 5) valTens = 0;
+					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionS2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+
+					// add 1 second
+					valOnes++;
+					if (valOnes > 9) valOnes = 0;
+					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					break;
+				}
+			}
+			break;
+		}
+				
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
@@ -413,6 +506,85 @@ void IVView::OnDownButton(void)
 			break;
 			
 		case kStateFrameDelayPanel:
+		{
+			switch (mFrameDelaySelection)
+			{
+				case kFrameDelaySelectionH1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+
+					// subtract ten hours
+					valTens--;
+					if (valTens < 0) valTens = 9;
+					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionH2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+
+					// subtract 1 hour
+					valOnes--;
+					if (valOnes < 0) valOnes = 9;
+					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionM1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+
+					// subtract ten minutes
+					valTens--;
+					if (valTens < 0) valTens = 5;
+					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionM2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+
+					// subtract 1 minute
+					valOnes--;
+					if (valOnes < 0) valOnes = 9;
+					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionS1:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+
+					// subtract ten seconds
+					valTens--;
+					if (valTens < 0) valTens = 5;
+					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					break;
+				}
+					
+				case kFrameDelaySelectionS2:
+				{
+					int valTens, valOnes;
+					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+
+					// subtract 1 second
+					valOnes--;
+					if (valOnes < 0) valOnes = 9;
+					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					break;
+				}
+					
+			}
+			break;
+		}
+		
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
@@ -426,7 +598,31 @@ void IVView::OnDownButton(void)
 ******************************************************************************/
 void IVView::OnEnterButton(void)
 {
-	// TBD
+	int prevState = mState;
+	
+	switch (mState)
+	{
+		case kStateMainPanel:
+			mModel->ToggleIntervalometer();
+			break;
+			
+		case kStateSettingsPanel:
+		case kStateSplashPanel:
+			break;
+			
+		case kStateFrameDelayPanel:
+			mState = kStateSettingsPanel;
+			break;
+			
+		case kStateFrameCountPanel:
+		case kStateFrameRatePanel:
+		case kStatePlaybackTimePanel:
+			// vibrate, do nothing
+			break;
+	}
+
+	if (prevState != mState)
+		ExitStageRight();
 }
 
 /******************************************************************************
@@ -525,7 +721,8 @@ void IVView::DrawMainPanel(void)
 	sprintf(text, "RealTm: %02d:%02d:%02d", mModel->RealTimeHours(), mModel->RealTimeMinutes(), mModel->RealTimeSeconds());
 	SetTextForLine(2, text, kTextAlignLeft);
 	
-	sprintf(text, "Click to Start");
+	if (mModel->IsIntervalometerEnabled())	sprintf(text, "Click to Pause");
+	else 									sprintf(text, "Click to Start");
 	SetTextForLine(3, text, kTextAlignCenter);
 	
 	SelectLine(3);
@@ -567,6 +764,26 @@ void IVView::DrawSettingsPanel(void)
 /******************************************************************************
 
 ******************************************************************************/
+const uint8_t* IVView::SpriteAtIndex(int idx)
+{
+	return &(kSelectedNumberSpriteSheet[idx * kCellHeight]);
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UnpackValue(int value, int* outTens, int* outOnes)
+{
+	int valTens = value / 10;
+	int valOnes	= value - 10 * valTens;
+	
+	*outTens = valTens;
+	*outOnes = valOnes;
+}
+
+/******************************************************************************
+
+******************************************************************************/
 void IVView::DrawFrameDelayPanel(void)
 {
 	ClearAllLines();
@@ -578,7 +795,63 @@ void IVView::DrawFrameDelayPanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
-	sprintf(text, "%02d:%02d:%02d", mModel->FrameDelayHours(), mModel->FrameDelayMinutes(), mModel->FrameDelaySeconds());
+	switch (mFrameDelaySelection)
+	{
+		case kFrameDelaySelectionH1:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
+			sprintf(text, "%c%d:%02d:%02d", kSelectedCharacter, valOnes, mModel->FrameDelayMinutes(), mModel->FrameDelaySeconds());
+			break;
+		}
+
+		case kFrameDelaySelectionH2:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
+			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedCharacter, mModel->FrameDelayMinutes(), mModel->FrameDelaySeconds());
+			break;
+		}
+
+		case kFrameDelaySelectionM1:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
+			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayHours(), kSelectedCharacter, valOnes, mModel->FrameDelaySeconds());
+			break;
+		}
+
+		case kFrameDelaySelectionM2:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
+			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayHours(), valTens, kSelectedCharacter, mModel->FrameDelaySeconds());
+			break;
+		}
+
+		case kFrameDelaySelectionS1:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
+			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayHours(), mModel->FrameDelayMinutes(), kSelectedCharacter, valOnes);
+			break;
+		}
+
+		case kFrameDelaySelectionS2:
+		{
+			int valTens, valOnes;
+			UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
+			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayHours(), mModel->FrameDelayMinutes(), valTens, kSelectedCharacter);
+			break;
+		}
+	}
+	
 	SetTextForLine(2, text, kTextAlignCenter);
 	
 	sprintf(text, "hh:mm:ss");

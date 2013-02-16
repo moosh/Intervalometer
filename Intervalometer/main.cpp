@@ -29,6 +29,7 @@ int main(void)
 	pinMode(kPinRightButton, INPUT);
 	pinMode(kPinUpButton, INPUT);
 	pinMode(kPinDownButton, INPUT);
+	pinMode(kPinEnterButton, INPUT);
 		
 	randomSeed(analogRead(5));
 

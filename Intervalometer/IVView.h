@@ -31,6 +31,16 @@ enum ViewState
 	kStatePlaybackTimePanel
 };
 
+enum FrameDelaySelection
+{
+	kFrameDelaySelectionH1,
+	kFrameDelaySelectionH2,
+	kFrameDelaySelectionM1,
+	kFrameDelaySelectionM2,
+	kFrameDelaySelectionS1,
+	kFrameDelaySelectionS2
+};
+
 class IVView
 {
 private:
@@ -38,6 +48,7 @@ private:
 	IVModel* mModel;
 	char mOutputLines[kNumRows][kNumCols+1];	// room for null terminator
 	int mState;
+	int mFrameDelaySelection;
 	int mSplashPanelSelection;
 	int mSettingsPanelSelection;
 	
@@ -45,6 +56,8 @@ private:
 	void WriteLine(int line);
 	void SetTextForLine(int line, char* text, TextAlign align);
 	
+	void UnpackValue(int value, int* outTens, int* outOnes);
+	const uint8_t* SpriteAtIndex(int idx);
 	void ShiftTextLeft(char* text);
 	void ShiftTextRight(char* text);
 	void ExitStageLeft(void);

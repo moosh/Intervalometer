@@ -446,6 +446,7 @@
 		8C46B4F516CEEBF400823D0E /* Prefix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.h; sourceTree = "<group>"; };
 		8C46B4F616CEEBF400823D0E /* Queue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Queue.cpp; sourceTree = "<group>"; };
 		8C46B4F716CEEBF400823D0E /* Queue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
+		8C46B4F816CFEC5C00823D0E /* SpriteSheets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpriteSheets.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -480,6 +481,7 @@
 				8C46B4F416CEEBF400823D0E /* Prefix.cpp */,
 				8C46B4F616CEEBF400823D0E /* Queue.cpp */,
 				8C46B4F716CEEBF400823D0E /* Queue.h */,
+				8C46B4F816CFEC5C00823D0E /* SpriteSheets.h */,
 				8C46B2F916CEEACE00823D0E /* Arduino */,
 				8C46B4B516CEEAD000823D0E /* Config */,
 				8C46B4BB16CEEAD000823D0E /* Makefiles */,

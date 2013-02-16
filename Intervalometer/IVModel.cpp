@@ -34,40 +34,15 @@ IVModel::~IVModel(void)
 ******************************************************************************/
 void IVModel::Init(void)
 {
-	mFrameDelayInSeconds	= 1;
+	mFrameDelayHours		= 0;
+	mFrameDelayMinutes		= 0;
+	mFrameDelaySeconds		= 1;
 	mCurrentFrameCount		= 0;
 	mMaxFrameCount			= 30;
 	mFrameRate				= 30;	// fps
 	mPlaybackTimeInSeconds	= mCurrentFrameCount / mFrameRate;
-	mRealTimeInSeconds		= mPlaybackTimeInSeconds * mFrameDelayInSeconds;
-}
-
-/******************************************************************************
-
-******************************************************************************/
-int IVModel::FrameDelayHours(void)
-{
-	return (int)(mFrameDelayInSeconds / kSecondsPerHour);
-}
-
-/******************************************************************************
-
-******************************************************************************/
-int IVModel::FrameDelayMinutes(void)
-{
-	long timeInMinutes = mFrameDelayInSeconds / kSecondsPerMinute;
-	timeInMinutes %= kMinutesPerHour;
-	
-	return (int)timeInMinutes;
-}
-
-/******************************************************************************
-
-******************************************************************************/
-int IVModel::FrameDelaySeconds(void)
-{
-	long timeInSeconds = mFrameDelayInSeconds % kSecondsPerMinute;
-	return timeInSeconds;
+	mRealTimeInSeconds		= mPlaybackTimeInSeconds * (mFrameDelayHours * kSecondsPerHour + mFrameDelayMinutes * kSecondsPerMinute + mFrameDelaySeconds);
+	mEnableIntervalometer	= false;
 }
 
 /******************************************************************************
