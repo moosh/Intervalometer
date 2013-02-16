@@ -47,7 +47,8 @@ private:
 	
 	void ShiftTextLeft(char* text);
 	void ShiftTextRight(char* text);
-	void ExitStageLeft(char* lineArray);
+	void ExitStageLeft(void);
+	void ExitStageRight(void);
 	
 	void ClearAllLines(void);
 	void DrawPlaybackTimePanel(void);

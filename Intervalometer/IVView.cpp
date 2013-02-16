@@ -147,14 +147,10 @@ void IVView::ShiftTextRight(char* text)
 
 /******************************************************************************
 
-	ExitStageLeft()
-	
-	Assumes the input parameter is a pointer of type char[4][17]
-	
 ******************************************************************************/
-void IVView::ExitStageLeft(char* lines4x17)
+void IVView::ExitStageLeft(void)
 {
-	const int kSlideDelay = 10;
+	const int kSlideDelay = 1;
 	char* line = NULL;
 	
 	int rowBytes = kNumCols+1;
@@ -162,8 +158,29 @@ void IVView::ExitStageLeft(char* lines4x17)
 	{
 		for (int row = 0; row < kNumRows; ++row)
 		{
-			line = &lines4x17[row * rowBytes + col];
+			line = mOutputLines[row];
 			SetCursorPosition(row,0); ShiftTextLeft(line);
+			mLCD->print(line);
+			delay(kSlideDelay);
+		}
+	}
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::ExitStageRight(void)
+{
+	const int kSlideDelay = 1;
+	char* line = NULL;
+	
+	int rowBytes = kNumCols+1;
+	for (int col = 0; col < kNumCols; ++col)
+	{
+		for (int row = 0; row < kNumRows; ++row)
+		{
+			line = mOutputLines[row];
+			SetCursorPosition(row,0); ShiftTextRight(line);
 			mLCD->print(line);
 			delay(kSlideDelay);
 		}
@@ -261,6 +278,8 @@ void IVView::SetTextForLine(int line, char* text, TextAlign align)
 ******************************************************************************/
 void IVView::OnLeftButton(void)
 {
+	int prevState = mState;
+	
 	switch (mState)
 	{
 		case kStateSplashPanel:
@@ -272,7 +291,7 @@ void IVView::OnLeftButton(void)
 			break;
 			
 		case kStateSettingsPanel:
-			mState = kStateMainPanel;
+			mState = kStateSplashPanel;
 			break;
 			
 		case kStateFrameDelayPanel:
@@ -282,6 +301,9 @@ void IVView::OnLeftButton(void)
 			mState = kStateSettingsPanel;
 			break;
 	}
+	
+	if (prevState != mState)
+		ExitStageRight();
 }
 
 /******************************************************************************
@@ -289,6 +311,8 @@ void IVView::OnLeftButton(void)
 ******************************************************************************/
 void IVView::OnRightButton(void)
 {
+	int prevState = mState;
+	
 	switch (mState)
 	{
 		case kStateSplashPanel:
@@ -323,9 +347,12 @@ void IVView::OnRightButton(void)
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
-			mState = kStateSettingsPanel;
+			// vibrate, do nothing;
 			break;
 	}
+	
+	if (prevState != mState)
+		ExitStageLeft();
 }
 
 /******************************************************************************
