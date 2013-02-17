@@ -34,6 +34,7 @@ IVView::IVView(void)
 	mSplashPanelSelection = 2;
 	mSettingsPanelSelection = 0;
 	mFrameDelaySelection = kFrameDelaySelectionS2;
+	mMainPanelSelection = 1;
 }
 
 /******************************************************************************
@@ -290,7 +291,12 @@ void IVView::OnLeftButton(void)
 			break;
 			
 		case kStateMainPanel:
-			mState = kStateSplashPanel;
+			mMainPanelSelection--;
+			if (mMainPanelSelection < kMainPanelSelectionReset)
+			{
+				mState = kStateSplashPanel;
+				mMainPanelSelection = kMainPanelSelectionReset;
+			}
 			break;
 			
 		case kStateSettingsPanel:
@@ -336,7 +342,12 @@ void IVView::OnRightButton(void)
 		}
 			
 		case kStateMainPanel:
-			// vibrate, do nothing
+			mMainPanelSelection++;
+			if (mMainPanelSelection > kMainPanelSelectionPlayPause)
+			{
+				// vibrate, maybe
+				mMainPanelSelection = kMainPanelSelectionPlayPause;
+			}
 			break;
 			
 		case kStateSettingsPanel:
@@ -603,8 +614,19 @@ void IVView::OnEnterButton(void)
 	switch (mState)
 	{
 		case kStateMainPanel:
-			mModel->ToggleIntervalometer();
+		{
+			switch (mMainPanelSelection)
+			{
+				case kMainPanelSelectionReset:
+					mModel->Reset();
+					break;
+					
+				case kMainPanelSelectionPlayPause:
+					mModel->ToggleIntervalometer();
+					break;
+			}
 			break;
+		}
 			
 		case kStateSettingsPanel:
 		case kStateSplashPanel:
@@ -705,6 +727,18 @@ void IVView::DrawSplashPanel(void)
 }
 
 /******************************************************************************
+const int kResetSelectedSpriteIndex 	= 0;
+const int kResetSpriteIndex				= 1;
+const int kPlaySelectedSpriteIndex 		= 2;
+const int kPlaypriteIndex				= 3;
+const int kPauseSelectedSpriteIndex 	= 4;
+const int kPauseSpriteIndex				= 5;
+
+const int kPlayPauseResetSpriteCellCount = 6;
+
+const int kResetCharacter 		= 0x02;
+const int kPlayPauseCharacter 	= 0x03;
+
 
 ******************************************************************************/
 void IVView::DrawMainPanel(void)
@@ -712,7 +746,7 @@ void IVView::DrawMainPanel(void)
 	ClearAllLines();
 	
 	char text[20];
-	sprintf(text, "Frame: %d", mModel->CurrentFrameCount());
+	sprintf(text, "Frame:  %d", mModel->CurrentFrameCount());
 	SetTextForLine(0, text, kTextAlignLeft);
 	
 	sprintf(text, "PlayTm: %02d:%02d:%02d", mModel->PlaybackTimeHours(), mModel->PlaybackTimeMinutes(), mModel->PlaybackTimeSeconds());
@@ -720,12 +754,47 @@ void IVView::DrawMainPanel(void)
 	
 	sprintf(text, "RealTm: %02d:%02d:%02d", mModel->RealTimeHours(), mModel->RealTimeMinutes(), mModel->RealTimeSeconds());
 	SetTextForLine(2, text, kTextAlignLeft);
+		
+	switch (mMainPanelSelection)
+	{
+		case kMainPanelSelectionReset:
+		{
+			int playPauseIdx = 0;
+			if (mModel->IsIntervalometerEnabled())	playPauseIdx = kPauseSpriteIndex;
+			else									playPauseIdx = kPlaySpriteIndex;
+			
+			SetCharRAM(kResetCharacter, PlayPauseResetBitmap(kResetSelectedSpriteIndex));
+			SetCharRAM(kPlayPauseCharacter, PlayPauseResetBitmap(playPauseIdx));
+			sprintf(text, "%c%c%c  %c%c%c",
+					kSelectionCharacter,
+					kResetCharacter,
+					kSelectionCharacter,
+					' ',
+					kPlayPauseCharacter,
+					' ');
+			break;
+		}
+			
+		case kMainPanelSelectionPlayPause:
+		{
+			int playPauseIdx = 0;
+			if (mModel->IsIntervalometerEnabled())	playPauseIdx = kPauseSelectedSpriteIndex;
+			else									playPauseIdx = kPlaySelectedSpriteIndex;
+			
+			SetCharRAM(kResetCharacter, PlayPauseResetBitmap(kResetSpriteIndex));
+			SetCharRAM(kPlayPauseCharacter, PlayPauseResetBitmap(playPauseIdx));
+			sprintf(text, "%c%c%c  %c%c%c",
+					' ',
+					kResetCharacter,
+					' ',
+					kSelectionCharacter,
+					kPlayPauseCharacter,
+					kSelectionCharacter);
+			break;
+		}
+	}
 	
-	if (mModel->IsIntervalometerEnabled())	sprintf(text, "Click to Pause");
-	else 									sprintf(text, "Click to Start");
 	SetTextForLine(3, text, kTextAlignCenter);
-	
-	SelectLine(3);
 	
 	WriteLine(0);
 	WriteLine(1);
@@ -764,26 +833,6 @@ void IVView::DrawSettingsPanel(void)
 /******************************************************************************
 
 ******************************************************************************/
-const uint8_t* IVView::SpriteAtIndex(int idx)
-{
-	return &(kSelectedNumberSpriteSheet[idx * kCellHeight]);
-}
-
-/******************************************************************************
-
-******************************************************************************/
-void IVView::UnpackValue(int value, int* outTens, int* outOnes)
-{
-	int valTens = value / 10;
-	int valOnes	= value - 10 * valTens;
-	
-	*outTens = valTens;
-	*outOnes = valOnes;
-}
-
-/******************************************************************************
-
-******************************************************************************/
 void IVView::DrawFrameDelayPanel(void)
 {
 	ClearAllLines();
@@ -801,8 +850,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%c%d:%02d:%02d", kSelectedCharacter, valOnes, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
+			sprintf(text, "%c%d:%02d:%02d", kSelectedNumberCharacter, valOnes, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
@@ -810,8 +859,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
+			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedNumberCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
@@ -819,8 +868,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayMinutesPart(), kSelectedCharacter, valOnes, mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
+			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, valOnes, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
@@ -828,8 +877,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayMinutesPart(), valTens, kSelectedCharacter, mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
+			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayMinutesPart(), valTens, kSelectedNumberCharacter, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
@@ -837,8 +886,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), kSelectedCharacter, valOnes);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
+			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, valOnes);
 			break;
 		}
 
@@ -846,8 +895,8 @@ void IVView::DrawFrameDelayPanel(void)
 		{
 			int valTens, valOnes;
 			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), valTens, kSelectedCharacter);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
+			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), valTens, kSelectedNumberCharacter);
 			break;
 		}
 	}
@@ -939,6 +988,34 @@ void IVView::DrawPlaybackTimePanel(void)
 	WriteLine(1);
 	WriteLine(2);
 	WriteLine(3);
+}
+
+/******************************************************************************
+
+******************************************************************************/
+const uint8_t* IVView::SelectedCharacterBitmap(int idx)
+{
+	return &(kSelectedNumberSpriteSheet[idx * kCellHeight]);
+}
+
+/******************************************************************************
+
+******************************************************************************/
+const uint8_t* IVView::PlayPauseResetBitmap(int idx)
+{
+	return &(kPlayPauseResetSpriteSheet[idx * kCellHeight]);
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UnpackValue(int value, int* outTens, int* outOnes)
+{
+	int valTens = value / 10;
+	int valOnes	= value - 10 * valTens;
+	
+	*outTens = valTens;
+	*outOnes = valOnes;
 }
 
 /******************************************************************************

@@ -44,9 +44,6 @@ void IVController::Init(IVModel* model, IVView* view)
 	
 	mModel = model;
 	mView = view;
-	
-	//mView->ShowSplash();
-	//mQueue.scheduleFunction(AdvanceSpriteCB, "Ship", 0, 200, kShipSpriteID, this);
 }
 
 /******************************************************************************
@@ -57,6 +54,7 @@ int IVController::TriggerCameraCB(unsigned long now, int message, void* ctx)
 	IVController* pThis = (IVController*)ctx;
 	if (!pThis) return 0;
 
+	//pThis->TriggerShutter();
 	pThis->TriggerCamera();
 }
 
@@ -85,7 +83,12 @@ void IVController::TriggerShutter(void)
 ******************************************************************************/
 void IVController::Timeslice(void)
 {
-	const int kButtonPressDelay = 200;
+	const int kButtonPressDelay = 400;
+	if (digitalRead(kLeftButton)) 	{ mView->OnLeftButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kRightButton))	{ mView->OnRightButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kUpButton)) 	{ mView->OnUpButton(); 		delay(kButtonPressDelay); }
+	if (digitalRead(kDownButton)) 	{ mView->OnDownButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kEnterButton)) 	{ mView->OnEnterButton();	delay(kButtonPressDelay); }
 	
 	if (mModel->IsIntervalometerEnabled() && (mQueue.queueSize() == 0))
 	{
@@ -96,13 +99,6 @@ void IVController::Timeslice(void)
 		mQueue.scheduleRemoveFunction("Trig");
 	}
 	mQueue.Run(millis());
-	
-	if (digitalRead(kLeftButton)) 	{ mView->OnLeftButton(); 	delay(kButtonPressDelay); }
-	if (digitalRead(kRightButton))	{ mView->OnRightButton(); 	delay(kButtonPressDelay); }
-	if (digitalRead(kUpButton)) 	{ mView->OnUpButton(); 		delay(kButtonPressDelay); }
-	if (digitalRead(kDownButton)) 	{ mView->OnDownButton(); 	delay(kButtonPressDelay); }
-	if (digitalRead(kEnterButton)) 	{ mView->OnEnterButton();	delay(kButtonPressDelay); }
-
 	mView->Refresh();
 }
 

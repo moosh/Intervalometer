@@ -26,7 +26,8 @@ public:
 	IVModel(void);
 	~IVModel(void);
 	void Init(void);
-	
+
+	void Reset(void);
 	void UpdateState(void);
 	
 	long FrameDelayInSeconds(void);
@@ -55,6 +56,7 @@ public:
 	bool IsIntervalometerEnabled(void) { return mEnableIntervalometer; }
 	void EnableIntervalometer(bool bEnable) { mEnableIntervalometer = bEnable; }
 	void ToggleIntervalometer(void) { mEnableIntervalometer = !mEnableIntervalometer; }
+	
 };
 
 

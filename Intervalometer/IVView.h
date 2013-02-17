@@ -31,6 +31,12 @@ enum ViewState
 	kStatePlaybackTimePanel
 };
 
+enum MainPanelSelection
+{
+	kMainPanelSelectionReset,
+	kMainPanelSelectionPlayPause,
+};
+
 enum FrameDelaySelection
 {
 	kFrameDelaySelectionH1,
@@ -50,6 +56,7 @@ private:
 	int mState;
 	int mFrameDelaySelection;
 	int mSplashPanelSelection;
+	int mMainPanelSelection;
 	int mSettingsPanelSelection;
 	
 	void SelectLine(int line);
@@ -57,7 +64,8 @@ private:
 	void SetTextForLine(int line, char* text, TextAlign align);
 	
 	void UnpackValue(int value, int* outTens, int* outOnes);
-	const uint8_t* SpriteAtIndex(int idx);
+	const uint8_t* SelectedCharacterBitmap(int idx);
+	const uint8_t* PlayPauseResetBitmap(int idx);
 	void ShiftTextLeft(char* text);
 	void ShiftTextRight(char* text);
 	void ExitStageLeft(void);
