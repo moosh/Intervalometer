@@ -30,7 +30,8 @@ int main(void)
 	pinMode(kPinUpButton, INPUT);
 	pinMode(kPinDownButton, INPUT);
 	pinMode(kPinEnterButton, INPUT);
-		
+	pinMode(kPinShutterTrigger, OUTPUT);
+	
 	randomSeed(analogRead(5));
 
 	mModel.Init();

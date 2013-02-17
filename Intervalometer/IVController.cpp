@@ -51,30 +51,33 @@ void IVController::Init(IVModel* model, IVView* view)
 
 /******************************************************************************
 
-******************************************************************************
-int IVController::AdvanceSpriteCB(unsigned long now, int message, void* ctx)
+******************************************************************************/
+int IVController::TriggerCameraCB(unsigned long now, int message, void* ctx)
 {
-	IVController* pthis = (IVController*)ctx;
-	if (!pthis) return 0;
-	
-	uint8_t spriteID = (uint8_t)message;
-	pthis->AdvanceSprite(spriteID);
+	IVController* pThis = (IVController*)ctx;
+	if (!pThis) return 0;
+
+	pThis->TriggerCamera();
 }
 
 /******************************************************************************
 
-******************************************************************************
-int IVController::AdvanceSprite(uint8_t spriteID)
+******************************************************************************/
+void IVController::TriggerCamera(void)
 {
-	Sprite* sprite = mModel->SpriteWithID(spriteID);
-	if (!sprite) return 0;
-	
-	PositionVec curPos, nextPos;
-	curPos	= sprite->CurPositionVec();
-	nextPos = sprite->NextPositionVec();
-	
-	sprite->SetDirectionVec(nextPos.dirVec);
-	mModel->MoveSpriteToPosition(spriteID, nextPos.position);
+	TriggerShutter();
+	mModel->IncrementFrameCount();
+	mModel->UpdateState();
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVController::TriggerShutter(void)
+{
+	digitalWrite(kPinShutterTrigger, HIGH);
+	delay(100);
+	digitalWrite(kPinShutterTrigger, LOW);
 }
 
 /******************************************************************************
@@ -82,14 +85,23 @@ int IVController::AdvanceSprite(uint8_t spriteID)
 ******************************************************************************/
 void IVController::Timeslice(void)
 {
+	const int kButtonPressDelay = 200;
+	
+	if (mModel->IsIntervalometerEnabled() && (mQueue.queueSize() == 0))
+	{
+		mQueue.scheduleFunction(TriggerCameraCB, "Trig", 0, mModel->FrameDelayInMilliseconds(), 0, this);
+	}
+	else if (!mModel->IsIntervalometerEnabled() && (mQueue.queueSize() != 0))
+	{
+		mQueue.scheduleRemoveFunction("Trig");
+	}
 	mQueue.Run(millis());
 	
-	if (digitalRead(kLeftButton)) 	mView->OnLeftButton();
-	if (digitalRead(kRightButton))	mView->OnRightButton();
-	if (digitalRead(kUpButton)) 	mView->OnUpButton();
-	if (digitalRead(kDownButton)) 	mView->OnDownButton();
-	if (digitalRead(kEnterButton)) 	mView->OnEnterButton();
-	delay(180);
+	if (digitalRead(kLeftButton)) 	{ mView->OnLeftButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kRightButton))	{ mView->OnRightButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kUpButton)) 	{ mView->OnUpButton(); 		delay(kButtonPressDelay); }
+	if (digitalRead(kDownButton)) 	{ mView->OnDownButton(); 	delay(kButtonPressDelay); }
+	if (digitalRead(kEnterButton)) 	{ mView->OnEnterButton();	delay(kButtonPressDelay); }
 
 	mView->Refresh();
 }

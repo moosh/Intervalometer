@@ -33,7 +33,8 @@ public:
 	int scheduleFunction(queuedFunction func, const char * id, unsigned long initialRun, unsigned long recur, int message, void* ctx);
 	int scheduleRemoveFunction(const char * id);
 	int scheduleChangeFunction(const char * id, unsigned long nextRunTime, unsigned long newRecur, int message, void* ctx);
-
+	int queueSize(void) { return _itemsInQueue; }
+	
 	int Run(unsigned long now);
 	/* data */
 };

@@ -20,14 +20,16 @@ private:
 	IVView* mView;
 	Queue mQueue;
 	
-	//static int AdvanceSpriteCB(unsigned long now, int message, void* ctx);
-	//int AdvanceSprite(uint8_t spriteID);
+	static int TriggerCameraCB(unsigned long now, int message, void* ctx);
+	void TriggerCamera(void);
 	
 public:
 	IVController(void);
 	~IVController(void);
 	void Init(IVModel* model, IVView* view);
 	void Timeslice();
+	
+	void TriggerShutter(void);
 };
 
 /******************************************************************************

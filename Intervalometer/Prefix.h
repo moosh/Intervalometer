@@ -24,11 +24,12 @@ const int kCellHeight		= 8;
 const uint8_t kClearCharacter		= ' ';
 const uint8_t kSelectionCharacter	= 0xFF;
 
-const int kPinLeftButton	= 11;
-const int kPinRightButton	= 12;
-const int kPinUpButton		= 14;
-const int kPinDownButton	= 15;
-const int kPinEnterButton	= 16;
+const int kPinLeftButton		= 11;
+const int kPinRightButton		= 12;
+const int kPinUpButton			= 14;
+const int kPinDownButton		= 15;
+const int kPinEnterButton		= 16;
+const int kPinShutterTrigger	= 17;
 
 typedef struct
 {

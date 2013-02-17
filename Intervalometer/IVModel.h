@@ -12,9 +12,9 @@
 class IVModel
 {
 private:
-	int mFrameDelayHours;
-	int mFrameDelayMinutes;
-	int mFrameDelaySeconds;
+	int mFrameDelayHoursPart;
+	int mFrameDelayMinutesPart;
+	int mFrameDelaySecondsPart;
 	long mCurrentFrameCount;
 	long mMaxFrameCount;
 	long mFrameRate;	// fps
@@ -27,17 +27,22 @@ public:
 	~IVModel(void);
 	void Init(void);
 	
-	int FrameDelayHours(void) { return mFrameDelayHours; }
-	int FrameDelayMinutes(void) { return mFrameDelayMinutes; }
-	int FrameDelaySeconds(void) { return mFrameDelaySeconds; }
+	void UpdateState(void);
 	
-	void SetFrameDelayHours(int value) { mFrameDelayHours = value; }
-	void SetFrameDelayMinutes(int value) { mFrameDelayMinutes = value; }
-	void SetFrameDelaySeconds(int value) { mFrameDelaySeconds = value; }
+	long FrameDelayInSeconds(void);
+	long FrameDelayInMilliseconds(void);
+	int FrameDelayHoursPart(void) { return mFrameDelayHoursPart; }
+	int FrameDelayMinutesPart(void) { return mFrameDelayMinutesPart; }
+	int FrameDelaySecondsPart(void) { return mFrameDelaySecondsPart; }
 	
-	int CurrentFrameCount(void);
-	int MaxFrameCount(void);
-	int FrameRate(void);
+	void SetFrameDelayHoursPart(int value) { mFrameDelayHoursPart = value; }
+	void SetFrameDelayMinutesPart(int value) { mFrameDelayMinutesPart = value; }
+	void SetFrameDelaySecondsPart(int value) { mFrameDelaySecondsPart = value; }
+	
+	void IncrementFrameCount(void) { mCurrentFrameCount++; }
+	int CurrentFrameCount(void) { return mCurrentFrameCount; }
+	int MaxFrameCount(void) { return mMaxFrameCount; }
+	int FrameRate(void) { return mFrameRate; }
 	
 	int PlaybackTimeHours(void);
 	int PlaybackTimeMinutes(void);

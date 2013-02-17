@@ -401,72 +401,72 @@ void IVView::OnUpButton(void)
 				case kFrameDelaySelectionH1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// add ten hours
 					valTens++;
 					if (valTens > 9) valTens = 0;
-					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionH2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// add 1 hour
 					valOnes++;
 					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionM1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// add ten minutes
 					valTens++;
 					if (valTens > 5) valTens = 0;
-					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionM2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// add 1 minute
 					valOnes++;
 					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionS1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 
 					// add ten seconds
 					valTens++;
 					if (valTens > 5) valTens = 0;
-					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionS2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 
 					// add 1 second
 					valOnes++;
 					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
 					break;
 				}
 			}
@@ -512,72 +512,72 @@ void IVView::OnDownButton(void)
 				case kFrameDelaySelectionH1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// subtract ten hours
 					valTens--;
 					if (valTens < 0) valTens = 9;
-					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionH2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// subtract 1 hour
 					valOnes--;
 					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelayHours(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionM1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// subtract ten minutes
 					valTens--;
 					if (valTens < 0) valTens = 5;
-					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionM2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 
 					// subtract 1 minute
 					valOnes--;
 					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelayMinutes(10 * valTens + valOnes);
+					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionS1:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 
 					// subtract ten seconds
 					valTens--;
 					if (valTens < 0) valTens = 5;
-					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
 					break;
 				}
 					
 				case kFrameDelaySelectionS2:
 				{
 					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 
 					// subtract 1 second
 					valOnes--;
 					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelaySeconds(10 * valTens + valOnes);
+					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
 					break;
 				}
 					
@@ -800,54 +800,54 @@ void IVView::DrawFrameDelayPanel(void)
 		case kFrameDelaySelectionH1:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%c%d:%02d:%02d", kSelectedCharacter, valOnes, mModel->FrameDelayMinutes(), mModel->FrameDelaySeconds());
+			sprintf(text, "%c%d:%02d:%02d", kSelectedCharacter, valOnes, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionH2:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayHours(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedCharacter, mModel->FrameDelayMinutes(), mModel->FrameDelaySeconds());
+			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionM1:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayHours(), kSelectedCharacter, valOnes, mModel->FrameDelaySeconds());
+			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayMinutesPart(), kSelectedCharacter, valOnes, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionM2:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutes(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayHours(), valTens, kSelectedCharacter, mModel->FrameDelaySeconds());
+			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayMinutesPart(), valTens, kSelectedCharacter, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionS1:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valTens));
-			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayHours(), mModel->FrameDelayMinutes(), kSelectedCharacter, valOnes);
+			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), kSelectedCharacter, valOnes);
 			break;
 		}
 
 		case kFrameDelaySelectionS2:
 		{
 			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelaySeconds(), &valTens, &valOnes);
+			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
 			SetCharRAM(kSelectedCharacter, SpriteAtIndex(valOnes));
-			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayHours(), mModel->FrameDelayMinutes(), valTens, kSelectedCharacter);
+			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), valTens, kSelectedCharacter);
 			break;
 		}
 	}
