@@ -17,7 +17,7 @@ private:
 	int mFrameDelaySecondsPart;
 	long mCurrentFrameCount;
 	long mMaxFrameCount;
-	long mFrameRate;	// fps
+	long mFrameRate;
 	long mPlaybackTimeInSeconds;
 	long mRealTimeInSeconds;
 	bool mEnableIntervalometer;
@@ -45,6 +45,7 @@ public:
 	long MaxFrameCount(void) { return mMaxFrameCount; }
 	void SetMaxFrameCount(long value) { mMaxFrameCount = value; }
 	int FrameRate(void) { return mFrameRate; }
+	void SetFrameRate(int value) { mFrameRate = value; }
 	
 	int PlaybackTimeHours(void);
 	int PlaybackTimeMinutes(void);

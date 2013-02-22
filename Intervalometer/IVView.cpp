@@ -28,14 +28,7 @@ const int kD7 = 10;
 ******************************************************************************/
 IVView::IVView(void)
 {
-	mLCD = NULL;
-	mModel = NULL;
-	mState = kStateSplashPanel;
-	mSplashPanelSelection = 2;
-	mSettingsPanelSelection = 0;
-	mFrameDelaySelection = kFrameDelaySelectionS2;
-	mMainPanelSelection = 1;
-	mFrameCountSelection = kFrameCount1;
+	Clear();
 }
 
 /******************************************************************************
@@ -43,12 +36,23 @@ IVView::IVView(void)
 ******************************************************************************/
 IVView::~IVView(void)
 {
-	mLCD = NULL;
-	mModel = NULL;
-	mState = kStateSplashPanel;
-	mSplashPanelSelection = 2;
+	Clear();
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::Clear(void)
+{
+	mLCD 					= NULL;
+	mModel 					= NULL;
+	mState 					= kStateSplashPanel;
+	mSplashPanelSelection 	= 2;
 	mSettingsPanelSelection = 0;
-	mFrameDelaySelection = kFrameDelaySelectionS2;
+	mFrameDelaySelection 	= kFrameDelaySelectionS2;
+	mMainPanelSelection 	= 1;
+	mFrameCountSelection 	= kFrameCount1;
+	mFrameRateSelection		= kFrameRate1;
 }
 
 /******************************************************************************
@@ -319,6 +323,12 @@ void IVView::OnLeftButton(void)
 		}
 		
 		case kStateFrameRatePanel:
+		{
+			mFrameRateSelection--;
+			if (mFrameRateSelection < kFrameRate10) mFrameRateSelection = kFrameRate1;
+			break;
+		}
+		
 		case kStatePlaybackTimePanel:
 			mState = kStateSettingsPanel;
 			break;
@@ -385,6 +395,12 @@ void IVView::OnRightButton(void)
 		}
 
 		case kStateFrameRatePanel:
+		{
+			mFrameRateSelection++;
+			if (mFrameRateSelection > kFrameRate1) mFrameRateSelection = kFrameRate10;
+			break;
+		}
+
 		case kStatePlaybackTimePanel:
 			// vibrate, do nothing;
 			break;
@@ -431,6 +447,11 @@ void IVView::OnUpButton(void)
 		}
 		
 		case kStateFrameRatePanel:
+		{
+			UpdateFrameRate(1);
+			break;
+		}
+		
 		case kStatePlaybackTimePanel:
 			// TBD
 			break;
@@ -475,9 +496,10 @@ void IVView::OnDownButton(void)
 			
 		case kStateFrameRatePanel:
 		{
+			UpdateFrameRate(-1);
 			break;
 		}
-		
+				
 		case kStatePlaybackTimePanel:
 			// TBD
 			break;
@@ -514,10 +536,10 @@ void IVView::OnEnterButton(void)
 			
 		case kStateFrameDelayPanel:
 		case kStateFrameCountPanel:
+		case kStateFrameRatePanel:
 			mState = kStateSettingsPanel;
 			break;
 			
-		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
 			// vibrate, do nothing
 			break;
@@ -855,7 +877,20 @@ void IVView::DrawFrameRatePanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
-	sprintf(text, "%02d fps", mModel->FrameRate());
+	UnpackedNumber num;
+	UnpackValue(mModel->FrameRate(), &num);
+	switch (mFrameRateSelection)
+	{
+		case kFrameRate1:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
+			sprintf(text, "%d%c fps", num.f10, kSelectedNumberCharacter);
+			break;
+			
+		case kFrameRate10:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
+			sprintf(text, "%c%d fps", kSelectedNumberCharacter, num.f1);
+			break;
+	}
 	SetTextForLine(2, text, kTextAlignCenter);
 	
 	sprintf(text, " ");
@@ -907,20 +942,6 @@ const uint8_t* IVView::SelectedCharacterBitmap(int idx)
 const uint8_t* IVView::PlayPauseResetBitmap(int idx)
 {
 	return &(kPlayPauseResetSpriteSheet[idx * kCellHeight]);
-}
-
-/******************************************************************************
-
-******************************************************************************/
-void IVView::UnpackValue(long value, UnpackedNumber* outNum)
-{
-	memset(outNum, 0, sizeof(UnpackedNumber));
-	
-	outNum->f10000 	= value / 10000;
-	outNum->f1000	= value / 1000 - 10 * outNum->f10000;
-	outNum->f100	= value / 100 - 100 * outNum->f10000 - 10 * outNum->f1000;
-	outNum->f10		= value / 10 - 1000 * outNum->f10000 - 100 * outNum->f1000 - 10 * outNum->f100;
-	outNum->f1		= value / 1 - 10000 * outNum->f10000 - 1000 * outNum->f1000 - 100 * outNum->f100 - 10 * outNum->f10;
 }
 
 /******************************************************************************
@@ -1047,6 +1068,32 @@ void IVView::UpdateFrameCount(int increment)
 	}
 	
 	mModel->SetMaxFrameCount(num.CombinedValue());
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UpdateFrameRate(int increment)
+{
+	UnpackedNumber num;
+	UnpackValue(mModel->FrameRate(), &num);
+
+	switch (mFrameRateSelection)
+	{
+		case kFrameRate1:
+			num.f1 += increment;
+			if (num.f1 < 0) num.f1 = 9;
+			else if (num.f1 > 9) num.f1 = 0;
+			break;
+			
+		case kFrameRate10:
+			num.f10 += increment;
+			if (num.f10 < 0) num.f10 = 9;
+			else if (num.f10 > 9) num.f10 = 0;
+			break;			
+	}
+	
+	mModel->SetFrameRate(num.CombinedValue());
 }
 
 /******************************************************************************

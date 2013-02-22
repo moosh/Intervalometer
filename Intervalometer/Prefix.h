@@ -49,12 +49,25 @@ typedef struct
 	Vec2 dirVec;
 }PositionVec;
 
+typedef struct
+{
+	int f1;
+	int f10;
+	int f100;
+	int f1000;
+	int f10000;
+	
+	long CombinedValue(void) { return 10000*(long)f10000 + 1000*(long)f1000 + 100*(long)f100 + 10*(long)f10 + (long)f1; }
+} UnpackedNumber;
+
 /******************************************************************************
 
 ******************************************************************************/
 bool PositionsEqual(Position a, Position b);
 Position NormalizePosition(Position& inOutPos);
 bool IsPositionValid(Position pos);
+void UnpackValue(long value, UnpackedNumber* outNum);
+
 
 /******************************************************************************
 
