@@ -19,7 +19,7 @@ const long kSecondsPerHour 		= 3600;
 ******************************************************************************/
 IVModel::IVModel(void)
 {
-	Reset();
+	Init();
 }
 
 /******************************************************************************
@@ -27,7 +27,7 @@ IVModel::IVModel(void)
 ******************************************************************************/
 IVModel::~IVModel(void)
 {
-	Reset();
+	Init();
 }
 
 /******************************************************************************
@@ -35,6 +35,15 @@ IVModel::~IVModel(void)
 ******************************************************************************/
 void IVModel::Init(void)
 {
+	mFrameDelayMinutesPart	= 0;
+	mFrameDelayMinutesPart	= 0;
+	mFrameDelaySecondsPart	= 1;
+	mCurrentFrameCount		= 0;
+	mMaxFrameCount			= 0;	// 0 == no max count
+	mFrameRate				= 30;	// fps
+	mPlaybackTimeInSeconds	= 0;
+	mRealTimeInSeconds		= 0;
+	mEnableIntervalometer	= false;
 }
 
 /******************************************************************************
@@ -46,8 +55,6 @@ void IVModel::Reset(void)
 	mFrameDelayMinutesPart	= 0;
 	mFrameDelaySecondsPart	= 1;
 	mCurrentFrameCount		= 0;
-	mMaxFrameCount			= 0;	// 0 == no max count
-	mFrameRate				= 30;	// fps
 	mPlaybackTimeInSeconds	= 0;
 	mRealTimeInSeconds		= 0;
 	mEnableIntervalometer	= false;
