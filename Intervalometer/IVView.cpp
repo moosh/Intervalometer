@@ -44,15 +44,16 @@ IVView::~IVView(void)
 ******************************************************************************/
 void IVView::Clear(void)
 {
-	mLCD 					= NULL;
-	mModel 					= NULL;
-	mState 					= kStateSplashPanel;
-	mSplashPanelSelection 	= 2;
-	mSettingsPanelSelection = 0;
-	mFrameDelaySelection 	= kFrameDelaySelectionS2;
-	mMainPanelSelection 	= 1;
-	mFrameCountSelection 	= kFrameCount1;
-	mFrameRateSelection		= kFrameRate1;
+	mLCD 						= NULL;
+	mModel 						= NULL;
+	mState 						= kStateSplashPanel;
+	mSplashPanelSelection 		= 2;
+	mSettingsPanelSelection 	= 0;
+	mFrameDelaySelection 		= kFrameDelaySelectionS2;
+	mMainPanelSelection 		= 1;
+	mFrameCountSelection 		= kFrameCount1;
+	mFrameRateSelection			= kFrameRate1;
+	mMaxPlaybackTimeSelection	= kMaxPlaybackTimeSelectionS2;
 }
 
 /******************************************************************************
@@ -330,8 +331,11 @@ void IVView::OnLeftButton(void)
 		}
 		
 		case kStatePlaybackTimePanel:
-			mState = kStateSettingsPanel;
+		{
+			mMaxPlaybackTimeSelection--;
+			if (mMaxPlaybackTimeSelection < kMaxPlaybackTimeSelectionH1) mMaxPlaybackTimeSelection = kMaxPlaybackTimeSelectionS2;
 			break;
+		}
 	}
 	
 	if (prevState != mState)
@@ -402,8 +406,11 @@ void IVView::OnRightButton(void)
 		}
 
 		case kStatePlaybackTimePanel:
-			// vibrate, do nothing;
+		{
+			mMaxPlaybackTimeSelection++;
+			if (mMaxPlaybackTimeSelection > kMaxPlaybackTimeSelectionS2) mMaxPlaybackTimeSelection = kMaxPlaybackTimeSelectionH1;
 			break;
+		}
 	}
 	
 	if (prevState != mState)
@@ -453,8 +460,10 @@ void IVView::OnUpButton(void)
 		}
 		
 		case kStatePlaybackTimePanel:
-			// TBD
+		{
+			UpdateMaxPlaybackTime(1);
 			break;
+		}
 	}
 }
 
@@ -501,8 +510,10 @@ void IVView::OnDownButton(void)
 		}
 				
 		case kStatePlaybackTimePanel:
-			// TBD
+		{
+			UpdateMaxPlaybackTime(-1);
 			break;
+		}
 	}
 }
 
@@ -537,11 +548,8 @@ void IVView::OnEnterButton(void)
 		case kStateFrameDelayPanel:
 		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
-			mState = kStateSettingsPanel;
-			break;
-			
 		case kStatePlaybackTimePanel:
-			// vibrate, do nothing
+			mState = kStateSettingsPanel;
 			break;
 	}
 
@@ -629,18 +637,6 @@ void IVView::DrawSplashPanel(void)
 }
 
 /******************************************************************************
-const int kResetSelectedSpriteIndex 	= 0;
-const int kResetSpriteIndex				= 1;
-const int kPlaySelectedSpriteIndex 		= 2;
-const int kPlaypriteIndex				= 3;
-const int kPauseSelectedSpriteIndex 	= 4;
-const int kPauseSpriteIndex				= 5;
-
-const int kPlayPauseResetSpriteCellCount = 6;
-
-const int kResetCharacter 		= 0x02;
-const int kPlayPauseCharacter 	= 0x03;
-
 
 ******************************************************************************/
 void IVView::DrawMainPanel(void)
@@ -651,10 +647,13 @@ void IVView::DrawMainPanel(void)
 	sprintf(text, "Frame:  %d", mModel->CurrentFrameCount());
 	SetTextForLine(0, text, kTextAlignLeft);
 	
-	sprintf(text, "PlayTm: %02d:%02d:%02d", mModel->PlaybackTimeHours(), mModel->PlaybackTimeMinutes(), mModel->PlaybackTimeSeconds());
+	UnpackedTime time;
+	UnpackTime(mModel->CurrentPlaybackTimeInSeconds(), &time);
+	sprintf(text, "PlayTm: %d%d:%d%d:%d%d", time.fH1, time.fH2, time.fM1, time.fM2, time.fS1, time.fS2);
 	SetTextForLine(1, text, kTextAlignLeft);
 	
-	sprintf(text, "RealTm: %02d:%02d:%02d", mModel->RealTimeHours(), mModel->RealTimeMinutes(), mModel->RealTimeSeconds());
+	UnpackTime(mModel->ElapsedTimeInSeconds(), &time);
+	sprintf(text, "RealTm: %d%d:%d%d:%d%d", time.fH1, time.fH2, time.fM1, time.fM2, time.fS1, time.fS2);
 	SetTextForLine(2, text, kTextAlignLeft);
 		
 	switch (mMainPanelSelection)
@@ -746,58 +745,52 @@ void IVView::DrawFrameDelayPanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
-	UnpackedNumber num;
+	UnpackedTime time;
+	UnpackTime(mModel->FrameDelayInSeconds(), &time);
 	switch (mFrameDelaySelection)
 	{
 		case kFrameDelaySelectionH1:
 		{
-			UnpackValue(mModel->FrameDelayHoursPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
-			sprintf(text, "%c%d:%02d:%02d", kSelectedNumberCharacter, num.f1, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fH1));
+			sprintf(text, "%c%d:%d%d:%d%d", kSelectedNumberCharacter, time.fH2, time.fM1, time.fM2, time.fS1, time.fS2);
 			break;
 		}
 
 		case kFrameDelaySelectionH2:
 		{
-			UnpackValue(mModel->FrameDelayHoursPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
-			sprintf(text, "%d%c:%02d:%02d", num.f10, kSelectedNumberCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fH2));
+			sprintf(text, "%d%c:%d%d:%d%d", time.fH1, kSelectedNumberCharacter, time.fM1, time.fM2, time.fS1, time.fS2);
 			break;
 		}
 
 		case kFrameDelaySelectionM1:
 		{
-			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
-			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayHoursPart(), kSelectedNumberCharacter, num.f1, mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fM1));
+			sprintf(text, "%d%d:%c%d:%d%d", time.fH1, time.fH2, kSelectedNumberCharacter, time.fM2, time.fS1, time.fS2);
 			break;
 		}
 
 		case kFrameDelaySelectionM2:
 		{
-			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
-			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayHoursPart(), num.f10, kSelectedNumberCharacter, mModel->FrameDelaySecondsPart());
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fM2));
+			sprintf(text, "%d%d:%d%c:%d%d", time.fH1, time.fH2, time.fM1,kSelectedNumberCharacter, time.fS1, time.fS2);
 			break;
 		}
 
 		case kFrameDelaySelectionS1:
 		{
-			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
-			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayHoursPart(), mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, num.f1);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fS1));
+			sprintf(text, "%d%d:%d%d:%c%d", time.fH1, time.fH2, time.fM1, time.fM2, kSelectedNumberCharacter, time.fS2);
 			break;
 		}
 
 		case kFrameDelaySelectionS2:
 		{
-			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
-			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayHoursPart(), mModel->FrameDelayMinutesPart(), num.f10, kSelectedNumberCharacter);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fS2));
+			sprintf(text, "%d%d:%d%d:%d%c", time.fH1, time.fH2, time.fM1, time.fM2, time.fS1, kSelectedNumberCharacter);
 			break;
 		}
 	}
-	
 	SetTextForLine(2, text, kTextAlignCenter);
 	
 	sprintf(text, "hh:mm:ss");
@@ -916,7 +909,54 @@ void IVView::DrawPlaybackTimePanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
-	sprintf(text, "%02d:%02d:%02d", mModel->PlaybackTimeHours(), mModel->PlaybackTimeMinutes(), mModel->PlaybackTimeSeconds());
+	UnpackedTime time;
+	UnpackTime(mModel->MaxPlaybackTimeInSeconds(), &time);
+	sprintf(text, "%d%d:%d%d:%d%d", time.fH1, time.fH2, time.fM1, time.fM2, time.fS1, time.fS2);
+	
+	switch (mMaxPlaybackTimeSelection)
+	{
+		case kMaxPlaybackTimeSelectionH1:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fH1));
+			sprintf(text, "%c%d:%d%d:%d%d", kSelectedNumberCharacter, time.fH2, time.fM1, time.fM2, time.fS1, time.fS2);
+			break;
+		}
+
+		case kMaxPlaybackTimeSelectionH2:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fH2));
+			sprintf(text, "%d%c:%d%d:%d%d", time.fH1, kSelectedNumberCharacter, time.fM1, time.fM2, time.fS1, time.fS2);
+			break;
+		}
+
+		case kMaxPlaybackTimeSelectionM1:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fM1));
+			sprintf(text, "%d%d:%c%d:%d%d", time.fH1, time.fH2, kSelectedNumberCharacter, time.fM2, time.fS1, time.fS2);
+			break;
+		}
+
+		case kMaxPlaybackTimeSelectionM2:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fM2));
+			sprintf(text, "%d%d:%d%c:%d%d", time.fH1, time.fH2, time.fM1,kSelectedNumberCharacter, time.fS1, time.fS2);
+			break;
+		}
+
+		case kMaxPlaybackTimeSelectionS1:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fS1));
+			sprintf(text, "%d%d:%d%d:%c%d", time.fH1, time.fH2, time.fM1, time.fM2, kSelectedNumberCharacter, time.fS2);
+			break;
+		}
+
+		case kMaxPlaybackTimeSelectionS2:
+		{
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(time.fS2));
+			sprintf(text, "%d%d:%d%d:%d%c", time.fH1, time.fH2, time.fM1, time.fM2, time.fS1, kSelectedNumberCharacter);
+			break;
+		}
+	}
 	SetTextForLine(2, text, kTextAlignCenter);
 	
 	sprintf(text, "hh:mm:ss");
@@ -949,81 +989,67 @@ const uint8_t* IVView::PlayPauseResetBitmap(int idx)
 ******************************************************************************/
 void IVView::UpdateFrameDelay(int increment)
 {
-	UnpackedNumber num;
+	UnpackedTime time;
+	UnpackTime(mModel->FrameDelayInSeconds(), &time);
+	
 	switch (mFrameDelaySelection)
 	{
 		case kFrameDelaySelectionH1:
 		{
-			UnpackValue(mModel->FrameDelayHoursPart(), &num);
-
 			// increment ten hours
-			num.f10 += increment;
-			if (num.f10 < 0) num.f10 = 9;
-			else if (num.f10 > 9) num.f10 = 0;
-			mModel->SetFrameDelayHoursPart(10 * num.f10 + num.f1);
+			time.fH1 += increment;
+			if (time.fH1 < 0) time.fH1 = 9;
+			else if (time.fH1 > 9) time.fH1 = 0;
 			break;
 		}
 			
 		case kFrameDelaySelectionH2:
 		{
-			UnpackValue(mModel->FrameDelayHoursPart(), &num);
-
 			// increment 1 hour
-			num.f1 += increment;
-			if (num.f1 < 0) num.f1 = 9;
-			else if (num.f1 > 9) num.f1 = 0;
-			mModel->SetFrameDelayHoursPart(10 * num.f10 + num.f1);
+			time.fH2 += increment;
+			if (time.fH2 < 0) time.fH2 = 9;
+			else if (time.fH2 > 9) time.fH2 = 0;
 			break;
 		}
 			
 		case kFrameDelaySelectionM1:
 		{
-			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
-
 			// increment ten minutes
-			num.f10 += increment;
-			if (num.f10 < 0) num.f10 = 5;
-			else if (num.f10 > 5) num.f10 = 0;
-			mModel->SetFrameDelayMinutesPart(10 * num.f10 + num.f1);
+			time.fM1 += increment;
+			if (time.fM1 < 0) time.fM1 = 5;
+			else if (time.fM1 > 5) time.fM1 = 0;
 			break;
 		}
 			
 		case kFrameDelaySelectionM2:
 		{
-			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
-
 			// increment 1 minute
-			num.f1 += increment;
-			if (num.f1 < 0) num.f1 = 9;
-			else if (num.f1 > 9) num.f1 = 0;
-			mModel->SetFrameDelayMinutesPart(10 * num.f10 + num.f1);
+			time.fM2 += increment;
+			if (time.fM2 < 0) time.fM2 = 9;
+			else if (time.fM2 > 9) time.fM2 = 0;
 			break;
 		}
 			
 		case kFrameDelaySelectionS1:
 		{
-			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
-
 			// increment ten seconds
-			num.f10 += increment;
-			if (num.f10 < 0) num.f10 = 5;
-			else if (num.f10 > 5) num.f10 = 0;
-			mModel->SetFrameDelaySecondsPart(10 * num.f10 + num.f1);
+			time.fS1 += increment;
+			if (time.fS1 < 0) time.fS1 = 5;
+			else if (time.fS1 > 5) time.fS1 = 0;
 			break;
 		}
 			
 		case kFrameDelaySelectionS2:
 		{
-			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
-
 			// increment 1 second
-			num.f1 += increment;
-			if (num.f1 < 0) num.f1 = 9;
-			else if (num.f1 > 9) num.f1 = 0;
-			mModel->SetFrameDelaySecondsPart(10 * num.f10 + num.f1);
+			time.fS2 += increment;
+			if (time.fS2 < 0) time.fS2 = 9;
+			else if (time.fS2 > 9) time.fS2 = 0;
 			break;
 		}
 	}
+	
+	mModel->SetFrameDelayInSeconds(time.TotalSeconds());
 }
 
 /******************************************************************************
@@ -1094,6 +1120,74 @@ void IVView::UpdateFrameRate(int increment)
 	}
 	
 	mModel->SetFrameRate(num.CombinedValue());
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UpdateMaxPlaybackTime(int increment)
+{
+	UnpackedTime time;
+	UnpackTime(mModel->MaxPlaybackTimeInSeconds(), &time);
+	
+	switch (mMaxPlaybackTimeSelection)
+	{
+		case kMaxPlaybackTimeSelectionH1:
+		{
+			// increment ten hours
+			time.fH1 += increment;
+			if (time.fH1 < 0) time.fH1 = 9;
+			else if (time.fH1 > 9) time.fH1 = 0;
+			break;
+		}
+			
+		case kMaxPlaybackTimeSelectionH2:
+		{
+			// increment 1 hour
+			time.fH2 += increment;
+			if (time.fH2 < 0) time.fH2 = 9;
+			else if (time.fH2 > 9) time.fH2 = 0;
+			break;
+		}
+			
+		case kMaxPlaybackTimeSelectionM1:
+		{
+			// increment ten minutes
+			time.fM1 += increment;
+			if (time.fM1 < 0) time.fM1 = 5;
+			else if (time.fM1 > 5) time.fM1 = 0;
+			break;
+		}
+			
+		case kMaxPlaybackTimeSelectionM2:
+		{
+			// increment 1 minute
+			time.fM2 += increment;
+			if (time.fM2 < 0) time.fM2 = 9;
+			else if (time.fM2 > 9) time.fM2 = 0;
+			break;
+		}
+			
+		case kMaxPlaybackTimeSelectionS1:
+		{
+			// increment ten seconds
+			time.fS1 += increment;
+			if (time.fS1 < 0) time.fS1 = 5;
+			else if (time.fS1 > 5) time.fS1 = 0;
+			break;
+		}
+			
+		case kMaxPlaybackTimeSelectionS2:
+		{
+			// increment 1 second
+			time.fS2 += increment;
+			if (time.fS2 < 0) time.fS2 = 9;
+			else if (time.fS2 > 9) time.fS2 = 0;
+			break;
+		}
+	}
+	
+	mModel->SetMaxPlaybackTimeInSeconds(time.TotalSeconds());
 }
 
 /******************************************************************************

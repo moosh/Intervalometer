@@ -60,6 +60,30 @@ void UnpackValue(long value, UnpackedNumber* outNum)
 /******************************************************************************
 
 ******************************************************************************/
+void UnpackTime(long valueInSeconds, UnpackedTime* outTime)
+{
+	long timeAccountedFor = 0;
+	outTime->fH1 = valueInSeconds / (kSecondsPerHour * 10);
+	timeAccountedFor = kSecondsPerHour * 10 * outTime->fH1;
+	
+	outTime->fH2 = (valueInSeconds - timeAccountedFor) / kSecondsPerHour;
+	timeAccountedFor += kSecondsPerHour * outTime->fH2;
+	
+	outTime->fM1 = (valueInSeconds - timeAccountedFor) / (kSecondsPerMinute * 10);
+	timeAccountedFor += kSecondsPerMinute * 10 * outTime->fM1;
+
+	outTime->fM2 = (valueInSeconds - timeAccountedFor) / kSecondsPerMinute;
+	timeAccountedFor += kSecondsPerMinute * outTime->fM2;
+	
+	outTime->fS1 = (valueInSeconds - timeAccountedFor) / 10;
+	timeAccountedFor += 10 * outTime->fS1;
+	
+	outTime->fS2 = valueInSeconds - timeAccountedFor;
+}
+
+/******************************************************************************
+
+******************************************************************************/
 /******************************************************************************
 
 ******************************************************************************/

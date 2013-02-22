@@ -11,6 +11,9 @@
 
 #include "Arduino.h"
 
+const long kSecondsPerHour		= 3600;
+const long kSecondsPerMinute	= 60;
+
 const int kNumRows			= 4;
 const int kNumCols			= 16;
 const int kLeftCol			= 0;
@@ -60,6 +63,24 @@ typedef struct
 	long CombinedValue(void) { return 10000*(long)f10000 + 1000*(long)f1000 + 100*(long)f100 + 10*(long)f10 + (long)f1; }
 } UnpackedNumber;
 
+typedef struct
+{
+	int fH1;
+	int fH2;
+	int fM1;
+	int fM2;
+	int fS1;
+	int fS2;
+	
+	long TotalSeconds(void)
+	{
+		return (10 * (long)fH1 + (long)fH2) * kSecondsPerHour
+			 + (10 * (long)fM1 + (long)fM2) * kSecondsPerMinute
+			 + (10 * (long)fS1 + (long)fS2);
+	}
+
+} UnpackedTime;
+
 /******************************************************************************
 
 ******************************************************************************/
@@ -67,6 +88,7 @@ bool PositionsEqual(Position a, Position b);
 Position NormalizePosition(Position& inOutPos);
 bool IsPositionValid(Position pos);
 void UnpackValue(long value, UnpackedNumber* outNum);
+void UnpackTime(long valueInSeconds, UnpackedTime* outTime);
 
 
 /******************************************************************************

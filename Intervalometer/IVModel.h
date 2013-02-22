@@ -12,14 +12,13 @@
 class IVModel
 {
 private:
-	int mFrameDelayHoursPart;
-	int mFrameDelayMinutesPart;
-	int mFrameDelaySecondsPart;
+	long mFrameDelayInSeconds;
 	long mCurrentFrameCount;
 	long mMaxFrameCount;
 	long mFrameRate;
-	long mPlaybackTimeInSeconds;
-	long mRealTimeInSeconds;
+	long mCurPlaybackTimeInSeconds;
+	long mMaxPlaybackTimeInSeconds;
+	long mElapsedTimeInSeconds;
 	bool mEnableIntervalometer;
 	
 public:
@@ -30,16 +29,10 @@ public:
 	void Reset(void);
 	void UpdateState(void);
 	
-	long FrameDelayInSeconds(void);
-	long FrameDelayInMilliseconds(void);
-	int FrameDelayHoursPart(void) { return mFrameDelayHoursPart; }
-	int FrameDelayMinutesPart(void) { return mFrameDelayMinutesPart; }
-	int FrameDelaySecondsPart(void) { return mFrameDelaySecondsPart; }
-	
-	void SetFrameDelayHoursPart(int value) { mFrameDelayHoursPart = value; }
-	void SetFrameDelayMinutesPart(int value) { mFrameDelayMinutesPart = value; }
-	void SetFrameDelaySecondsPart(int value) { mFrameDelaySecondsPart = value; }
-	
+	long FrameDelayInSeconds(void) { return mFrameDelayInSeconds; }
+	long FrameDelayInMilliseconds(void) { return 1000 * mFrameDelayInSeconds; }
+	void SetFrameDelayInSeconds(long value) { mFrameDelayInSeconds = value; }
+		
 	void IncrementFrameCount(void) { mCurrentFrameCount++; }
 	int CurrentFrameCount(void) { return mCurrentFrameCount; }
 	long MaxFrameCount(void) { return mMaxFrameCount; }
@@ -47,17 +40,16 @@ public:
 	int FrameRate(void) { return mFrameRate; }
 	void SetFrameRate(int value) { mFrameRate = value; }
 	
-	int PlaybackTimeHours(void);
-	int PlaybackTimeMinutes(void);
-	int PlaybackTimeSeconds(void);
+	long CurrentPlaybackTimeInSeconds(void) { return mCurPlaybackTimeInSeconds; }
+	long MaxPlaybackTimeInSeconds(void) { return mMaxPlaybackTimeInSeconds; }
+	void SetMaxPlaybackTimeInSeconds(long value) { mMaxPlaybackTimeInSeconds = value; }
 	
-	int RealTimeHours(void);
-	int RealTimeMinutes(void);
-	int RealTimeSeconds(void);
+	int ElapsedTimeInSeconds(void) { return mElapsedTimeInSeconds; }
 	
+	bool CanIntervalometerBeEnabled(void);
 	bool IsIntervalometerEnabled(void) { return mEnableIntervalometer; }
-	void EnableIntervalometer(bool bEnable) { mEnableIntervalometer = bEnable; }
-	void ToggleIntervalometer(void) { mEnableIntervalometer = !mEnableIntervalometer; }
+	void EnableIntervalometer(bool bEnable);
+	void ToggleIntervalometer(void);
 	
 };
 

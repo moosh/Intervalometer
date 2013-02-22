@@ -62,6 +62,16 @@ enum FrameRateSelection
 	kFrameRate1
 };
 
+enum MaxPlaybackTimeSelection
+{
+	kMaxPlaybackTimeSelectionH1,
+	kMaxPlaybackTimeSelectionH2,
+	kMaxPlaybackTimeSelectionM1,
+	kMaxPlaybackTimeSelectionM2,
+	kMaxPlaybackTimeSelectionS1,
+	kMaxPlaybackTimeSelectionS2
+};
+
 class IVView
 {
 private:
@@ -75,6 +85,7 @@ private:
 	int mFrameDelaySelection;
 	int mFrameCountSelection;
 	int mFrameRateSelection;
+	int mMaxPlaybackTimeSelection;
 	
 	void Clear(void);
 	void SelectLine(int line);
@@ -100,6 +111,7 @@ private:
 	void UpdateFrameDelay(int increment);
 	void UpdateFrameCount(int increment);
 	void UpdateFrameRate(int increment);
+	void UpdateMaxPlaybackTime(int increment);
 	
 public:
 	IVView(void);
