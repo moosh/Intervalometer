@@ -35,6 +35,7 @@ IVView::IVView(void)
 	mSettingsPanelSelection = 0;
 	mFrameDelaySelection = kFrameDelaySelectionS2;
 	mMainPanelSelection = 1;
+	mFrameCountSelection = kFrameCount1;
 }
 
 /******************************************************************************
@@ -311,6 +312,12 @@ void IVView::OnLeftButton(void)
 		}
 		
 		case kStateFrameCountPanel:
+		{
+			mFrameCountSelection--;
+			if (mFrameCountSelection < kFrameCount10000) mFrameCountSelection = kFrameCount1;
+			break;
+		}
+		
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
 			mState = kStateSettingsPanel;
@@ -371,6 +378,12 @@ void IVView::OnRightButton(void)
 		}
 		
 		case kStateFrameCountPanel:
+		{
+			mFrameCountSelection++;
+			if (mFrameCountSelection > kFrameCount1) mFrameCountSelection = kFrameCount10000;
+			break;
+		}
+
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
 			// vibrate, do nothing;
@@ -407,84 +420,16 @@ void IVView::OnUpButton(void)
 			
 		case kStateFrameDelayPanel:
 		{
-			switch (mFrameDelaySelection)
-			{
-				case kFrameDelaySelectionH1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// add ten hours
-					valTens++;
-					if (valTens > 9) valTens = 0;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionH2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// add 1 hour
-					valOnes++;
-					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionM1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// add ten minutes
-					valTens++;
-					if (valTens > 5) valTens = 0;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionM2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// add 1 minute
-					valOnes++;
-					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionS1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-
-					// add ten seconds
-					valTens++;
-					if (valTens > 5) valTens = 0;
-					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionS2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-
-					// add 1 second
-					valOnes++;
-					if (valOnes > 9) valOnes = 0;
-					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
-					break;
-				}
-			}
+			UpdateFrameDelay(1);
 			break;
 		}
 				
 		case kStateFrameCountPanel:
+		{
+			UpdateFrameCount(1);
+			break;
+		}
+		
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
 			// TBD
@@ -518,86 +463,21 @@ void IVView::OnDownButton(void)
 			
 		case kStateFrameDelayPanel:
 		{
-			switch (mFrameDelaySelection)
-			{
-				case kFrameDelaySelectionH1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// subtract ten hours
-					valTens--;
-					if (valTens < 0) valTens = 9;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionH2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// subtract 1 hour
-					valOnes--;
-					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionM1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// subtract ten minutes
-					valTens--;
-					if (valTens < 0) valTens = 5;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionM2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-
-					// subtract 1 minute
-					valOnes--;
-					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelayMinutesPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionS1:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-
-					// subtract ten seconds
-					valTens--;
-					if (valTens < 0) valTens = 5;
-					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
-					break;
-				}
-					
-				case kFrameDelaySelectionS2:
-				{
-					int valTens, valOnes;
-					UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-
-					// subtract 1 second
-					valOnes--;
-					if (valOnes < 0) valOnes = 9;
-					mModel->SetFrameDelaySecondsPart(10 * valTens + valOnes);
-					break;
-				}
-					
-			}
+			UpdateFrameDelay(-1);
 			break;
 		}
 		
 		case kStateFrameCountPanel:
+		{
+			UpdateFrameCount(-1);
+			break;
+		}
+			
 		case kStateFrameRatePanel:
+		{
+			break;
+		}
+		
 		case kStatePlaybackTimePanel:
 			// TBD
 			break;
@@ -633,10 +513,10 @@ void IVView::OnEnterButton(void)
 			break;
 			
 		case kStateFrameDelayPanel:
+		case kStateFrameCountPanel:
 			mState = kStateSettingsPanel;
 			break;
 			
-		case kStateFrameCountPanel:
 		case kStateFrameRatePanel:
 		case kStatePlaybackTimePanel:
 			// vibrate, do nothing
@@ -844,59 +724,54 @@ void IVView::DrawFrameDelayPanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
+	UnpackedNumber num;
 	switch (mFrameDelaySelection)
 	{
 		case kFrameDelaySelectionH1:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
-			sprintf(text, "%c%d:%02d:%02d", kSelectedNumberCharacter, valOnes, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			UnpackValue(mModel->FrameDelayHoursPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
+			sprintf(text, "%c%d:%02d:%02d", kSelectedNumberCharacter, num.f1, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionH2:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
-			sprintf(text, "%d%c:%02d:%02d", valTens, kSelectedNumberCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
+			UnpackValue(mModel->FrameDelayHoursPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
+			sprintf(text, "%d%c:%02d:%02d", num.f10, kSelectedNumberCharacter, mModel->FrameDelayMinutesPart(), mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionM1:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
-			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, valOnes, mModel->FrameDelaySecondsPart());
+			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
+			sprintf(text, "%02d:%c%d:%02d", mModel->FrameDelayHoursPart(), kSelectedNumberCharacter, num.f1, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionM2:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelayMinutesPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
-			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayMinutesPart(), valTens, kSelectedNumberCharacter, mModel->FrameDelaySecondsPart());
+			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
+			sprintf(text, "%02d:%d%c:%02d", mModel->FrameDelayHoursPart(), num.f10, kSelectedNumberCharacter, mModel->FrameDelaySecondsPart());
 			break;
 		}
 
 		case kFrameDelaySelectionS1:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valTens));
-			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, valOnes);
+			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
+			sprintf(text, "%02d:%02d:%c%d", mModel->FrameDelayHoursPart(), mModel->FrameDelayMinutesPart(), kSelectedNumberCharacter, num.f1);
 			break;
 		}
 
 		case kFrameDelaySelectionS2:
 		{
-			int valTens, valOnes;
-			UnpackValue(mModel->FrameDelaySecondsPart(), &valTens, &valOnes);
-			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(valOnes));
-			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayMinutesPart(), mModel->FrameDelayMinutesPart(), valTens, kSelectedNumberCharacter);
+			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
+			sprintf(text, "%02d:%02d:%d%c", mModel->FrameDelayHoursPart(), mModel->FrameDelayMinutesPart(), num.f10, kSelectedNumberCharacter);
 			break;
 		}
 	}
@@ -926,7 +801,35 @@ void IVView::DrawFrameCountPanel(void)
 	sprintf(text, " ");
 	SetTextForLine(1, text, kTextAlignCenter);
 	
-	sprintf(text, "Max: %05d", mModel->MaxFrameCount());
+	UnpackedNumber num;
+	UnpackValue(mModel->MaxFrameCount(), &num);
+	switch (mFrameCountSelection)
+	{
+		case kFrameCount1:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1));
+			sprintf(text, "Max: %d%d%d%d%c", num.f10000, num.f1000, num.f100, num.f10, kSelectedNumberCharacter);
+			break;
+			
+		case kFrameCount10:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10));
+			sprintf(text, "Max: %d%d%d%c%d", num.f10000, num.f1000, num.f100, kSelectedNumberCharacter, num.f1);
+			break;
+			
+		case kFrameCount100:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f100));
+			sprintf(text, "Max: %d%d%c%d%d", num.f10000, num.f1000, kSelectedNumberCharacter, num.f10, num.f1);
+			break;
+			
+		case kFrameCount1000:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f1000));
+			sprintf(text, "Max: %d%c%d%d%d", num.f10000, kSelectedNumberCharacter, num.f100, num.f10, num.f1);
+			break;
+			
+		case kFrameCount10000:
+			SetCharRAM(kSelectedNumberCharacter, SelectedCharacterBitmap(num.f10000));
+			sprintf(text, "Max: %c%d%d%d%d", kSelectedNumberCharacter, num.f1000, num.f100, num.f10, num.f1);
+			break;
+	}
 	SetTextForLine(2, text, kTextAlignCenter);
 	
 	sprintf(text, "(0 = no maximum)");
@@ -1009,13 +912,141 @@ const uint8_t* IVView::PlayPauseResetBitmap(int idx)
 /******************************************************************************
 
 ******************************************************************************/
-void IVView::UnpackValue(int value, int* outTens, int* outOnes)
+void IVView::UnpackValue(long value, UnpackedNumber* outNum)
 {
-	int valTens = value / 10;
-	int valOnes	= value - 10 * valTens;
+	memset(outNum, 0, sizeof(UnpackedNumber));
 	
-	*outTens = valTens;
-	*outOnes = valOnes;
+	outNum->f10000 	= value / 10000;
+	outNum->f1000	= value / 1000 - 10 * outNum->f10000;
+	outNum->f100	= value / 100 - 100 * outNum->f10000 - 10 * outNum->f1000;
+	outNum->f10		= value / 10 - 1000 * outNum->f10000 - 100 * outNum->f1000 - 10 * outNum->f100;
+	outNum->f1		= value / 1 - 10000 * outNum->f10000 - 1000 * outNum->f1000 - 100 * outNum->f100 - 10 * outNum->f10;
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UpdateFrameDelay(int increment)
+{
+	UnpackedNumber num;
+	switch (mFrameDelaySelection)
+	{
+		case kFrameDelaySelectionH1:
+		{
+			UnpackValue(mModel->FrameDelayHoursPart(), &num);
+
+			// increment ten hours
+			num.f10 += increment;
+			if (num.f10 < 0) num.f10 = 9;
+			else if (num.f10 > 9) num.f10 = 0;
+			mModel->SetFrameDelayHoursPart(10 * num.f10 + num.f1);
+			break;
+		}
+			
+		case kFrameDelaySelectionH2:
+		{
+			UnpackValue(mModel->FrameDelayHoursPart(), &num);
+
+			// increment 1 hour
+			num.f1 += increment;
+			if (num.f1 < 0) num.f1 = 9;
+			else if (num.f1 > 9) num.f1 = 0;
+			mModel->SetFrameDelayHoursPart(10 * num.f10 + num.f1);
+			break;
+		}
+			
+		case kFrameDelaySelectionM1:
+		{
+			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
+
+			// increment ten minutes
+			num.f10 += increment;
+			if (num.f10 < 0) num.f10 = 5;
+			else if (num.f10 > 5) num.f10 = 0;
+			mModel->SetFrameDelayMinutesPart(10 * num.f10 + num.f1);
+			break;
+		}
+			
+		case kFrameDelaySelectionM2:
+		{
+			UnpackValue(mModel->FrameDelayMinutesPart(), &num);
+
+			// increment 1 minute
+			num.f1 += increment;
+			if (num.f1 < 0) num.f1 = 9;
+			else if (num.f1 > 9) num.f1 = 0;
+			mModel->SetFrameDelayMinutesPart(10 * num.f10 + num.f1);
+			break;
+		}
+			
+		case kFrameDelaySelectionS1:
+		{
+			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
+
+			// increment ten seconds
+			num.f10 += increment;
+			if (num.f10 < 0) num.f10 = 5;
+			else if (num.f10 > 5) num.f10 = 0;
+			mModel->SetFrameDelaySecondsPart(10 * num.f10 + num.f1);
+			break;
+		}
+			
+		case kFrameDelaySelectionS2:
+		{
+			UnpackValue(mModel->FrameDelaySecondsPart(), &num);
+
+			// increment 1 second
+			num.f1 += increment;
+			if (num.f1 < 0) num.f1 = 9;
+			else if (num.f1 > 9) num.f1 = 0;
+			mModel->SetFrameDelaySecondsPart(10 * num.f10 + num.f1);
+			break;
+		}
+	}
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVView::UpdateFrameCount(int increment)
+{
+	UnpackedNumber num;
+	UnpackValue(mModel->MaxFrameCount(), &num);
+
+	switch (mFrameCountSelection)
+	{
+		case kFrameCount1:
+			num.f1 += increment;
+			if (num.f1 < 0) num.f1 = 9;
+			else if (num.f1 > 9) num.f1 = 0;
+			break;
+			
+		case kFrameCount10:
+			num.f10 += increment;
+			if (num.f10 < 0) num.f10 = 9;
+			else if (num.f10 > 9) num.f10 = 0;
+			break;
+			
+		case kFrameCount100:
+			num.f100 += increment;
+			if (num.f100 < 0) num.f100 = 9;
+			else if (num.f100 > 9) num.f100 = 0;
+			break;
+			
+		case kFrameCount1000:
+			num.f1000 += increment;
+			if (num.f1000 < 0) num.f1000 = 9;
+			else if (num.f1000 > 9) num.f1000 = 0;
+			break;
+			
+		case kFrameCount10000:
+			num.f10000 += increment;
+			if (num.f10000 < 0) num.f10000 = 9;
+			else if (num.f10000 > 9) num.f10000 = 0;
+			break;
+	}
+	
+	mModel->SetMaxFrameCount(num.CombinedValue());
 }
 
 /******************************************************************************

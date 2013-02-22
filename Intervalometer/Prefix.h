@@ -24,12 +24,13 @@ const int kCellHeight		= 8;
 const uint8_t kClearCharacter		= ' ';
 const uint8_t kSelectionCharacter	= 0xFF;
 
-const int kPinLeftButton		= 11;
-const int kPinRightButton		= 12;
-const int kPinUpButton			= 14;
-const int kPinDownButton		= 15;
-const int kPinEnterButton		= 16;
-const int kPinShutterTrigger	= 17;
+const int kButtonCount		= 5;
+const int kLeftButton		= 11;
+const int kRightButton		= 12;
+const int kUpButton			= 14;
+const int kDownButton		= 15;
+const int kEnterButton		= 16;
+const int kShutterTrigger	= 17;
 
 typedef struct
 {
@@ -54,7 +55,6 @@ typedef struct
 bool PositionsEqual(Position a, Position b);
 Position NormalizePosition(Position& inOutPos);
 bool IsPositionValid(Position pos);
-bool IsAnyButtonPressed(void);
 
 /******************************************************************************
 

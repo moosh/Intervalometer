@@ -47,6 +47,26 @@ enum FrameDelaySelection
 	kFrameDelaySelectionS2
 };
 
+enum FrameCountSelection
+{
+	kFrameCount10000,
+	kFrameCount1000,
+	kFrameCount100,
+	kFrameCount10,
+	kFrameCount1,
+};
+
+typedef struct
+{
+	int f1;
+	int f10;
+	int f100;
+	int f1000;
+	int f10000;
+	
+	long CombinedValue(void) { return 10000*(long)f10000 + 1000*(long)f1000 + 100*(long)f100 + 10*(long)f10 + (long)f1; }
+} UnpackedNumber;
+
 class IVView
 {
 private:
@@ -55,6 +75,7 @@ private:
 	char mOutputLines[kNumRows][kNumCols+1];	// room for null terminator
 	int mState;
 	int mFrameDelaySelection;
+	int mFrameCountSelection;
 	int mSplashPanelSelection;
 	int mMainPanelSelection;
 	int mSettingsPanelSelection;
@@ -63,7 +84,7 @@ private:
 	void WriteLine(int line);
 	void SetTextForLine(int line, char* text, TextAlign align);
 	
-	void UnpackValue(int value, int* outTens, int* outOnes);
+	void UnpackValue(long value, UnpackedNumber* outNum);
 	const uint8_t* SelectedCharacterBitmap(int idx);
 	const uint8_t* PlayPauseResetBitmap(int idx);
 	void ShiftTextLeft(char* text);
@@ -79,6 +100,9 @@ private:
 	void DrawSettingsPanel(void);
 	void DrawMainPanel(void);
 	void DrawSplashPanel(void);
+	
+	void UpdateFrameDelay(int increment);
+	void UpdateFrameCount(int increment);
 	
 public:
 	IVView(void);

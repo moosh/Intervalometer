@@ -25,12 +25,12 @@ int main(void)
 {
 	init();
 	
-	pinMode(kPinLeftButton, INPUT);
-	pinMode(kPinRightButton, INPUT);
-	pinMode(kPinUpButton, INPUT);
-	pinMode(kPinDownButton, INPUT);
-	pinMode(kPinEnterButton, INPUT);
-	pinMode(kPinShutterTrigger, OUTPUT);
+	pinMode(kLeftButton, INPUT);
+	pinMode(kRightButton, INPUT);
+	pinMode(kUpButton, INPUT);
+	pinMode(kDownButton, INPUT);
+	pinMode(kEnterButton, INPUT);
+	pinMode(kShutterTrigger, OUTPUT);
 	
 	randomSeed(analogRead(5));
 

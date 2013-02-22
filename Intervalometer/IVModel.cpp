@@ -46,7 +46,7 @@ void IVModel::Reset(void)
 	mFrameDelayMinutesPart	= 0;
 	mFrameDelaySecondsPart	= 1;
 	mCurrentFrameCount		= 0;
-	mMaxFrameCount			= 30;
+	mMaxFrameCount			= 0;	// 0 == no max count
 	mFrameRate				= 30;	// fps
 	mPlaybackTimeInSeconds	= 0;
 	mRealTimeInSeconds		= 0;
@@ -60,6 +60,11 @@ void IVModel::UpdateState(void)
 {
 	mPlaybackTimeInSeconds	= mCurrentFrameCount / mFrameRate;
 	mRealTimeInSeconds		= mCurrentFrameCount * (mFrameDelayHoursPart * kSecondsPerHour + mFrameDelayMinutesPart * kSecondsPerMinute + mFrameDelaySecondsPart);
+	
+	// If a max frame count is defined stop the intervalometer if that count has been reached
+	if (mMaxFrameCount && (mCurrentFrameCount >= mMaxFrameCount))
+		mEnableIntervalometer = false;
+
 }
 
 /******************************************************************************

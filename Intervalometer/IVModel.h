@@ -42,7 +42,8 @@ public:
 	
 	void IncrementFrameCount(void) { mCurrentFrameCount++; }
 	int CurrentFrameCount(void) { return mCurrentFrameCount; }
-	int MaxFrameCount(void) { return mMaxFrameCount; }
+	long MaxFrameCount(void) { return mMaxFrameCount; }
+	void SetMaxFrameCount(long value) { mMaxFrameCount = value; }
 	int FrameRate(void) { return mFrameRate; }
 	
 	int PlaybackTimeHours(void);
