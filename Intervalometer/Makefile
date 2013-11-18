@@ -23,7 +23,9 @@
 #
 
 # FTDI Basic port
-BOARD_PORT = /dev/tty.usbserial-A4013FGO
+#BOARD_PORT = /dev/tty.usbserial-A4013FGO
+BOARD_PORT = /dev/tty.usbserial*
+
 
 # Xcode takes SKETCHBOOK_DIR from preferences.txt 
 # If not defined, each IDE has its own SKETCHBOOK_DIR (default)

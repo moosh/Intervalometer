@@ -50,6 +50,18 @@ void IVModel::Reset(void)
 	mCurPlaybackTimeInSeconds	= 0;
 	mElapsedTimeInSeconds		= 0;
 	mEnableIntervalometer		= false;
+	
+	int i = 0;
+	++i;
+}
+
+/******************************************************************************
+
+******************************************************************************/
+void IVModel::SaveModel(void)
+{
+	// save some parameters to NVRAM in the ATMega
+
 }
 
 /******************************************************************************
